@@ -26,8 +26,12 @@ Twitter Bootstrap Wizard Rails builds a wizard out of a formatter tabbable struc
 
 * Add to `app/assets/stylesheets/application.css`
   ```css
-  *= 'prettify'
+  *= require prettify
   ```
+
+## Dependencies
+* Bootstrap 3
+* jQuery
 
 ## Usage
 
