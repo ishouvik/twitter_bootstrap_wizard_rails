@@ -1,11 +1,11 @@
 language: ruby
-sudo: false
 before_install:
   - gem install bundler
 after_script:
   - bundle install
 cache: bundler
 rvm:
+  - 1.9.7
   - 2.1.0
   - 2.2.0
   - 2.3.0
