@@ -1,5 +1,27 @@
 language: ruby
+sudo: false
+before_install:
+  - gem install bundler
+before_script:
+  - bundle update
+cache: bundler
+env:
+  matrix:
+    - "GEM=railties"
+    - "GEM=ap"
+    - "GEM=ac"
+    - "GEM=am,amo,as,av,aj"
+    - "GEM=ar:mysql2"
+    - "GEM=ar:sqlite3"
+    - "GEM=ar:postgresql"
+    - "GEM=aj:integration"
+    - "GEM=guides"
 rvm:
-  - 2.1.0
   - 2.2.0
   - 2.3.0
+  - ruby-head
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+  fast_finish: true
+bundler_args: --without test
