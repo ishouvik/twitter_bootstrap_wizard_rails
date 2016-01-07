@@ -6,7 +6,6 @@ after_script:
   - bundle install
 cache: bundler
 rvm:
-  - 2.1.x
-  - 2.2.x
-  - 2.3.x
-  - ruby-head
+  - 2.1.0
+  - 2.2.0
+  - 2.3.0
