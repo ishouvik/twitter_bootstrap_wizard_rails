@@ -1,5 +1,13 @@
 language: ruby
+sudo: false
+script: 'ci/travis.rb'
+before_install:
+  - gem install bundler
+before_script:
+  - bundle update
+cache: bundler
 rvm:
-  - 1.9.3
   - 2.1.x
   - 2.2.x
+  - 2.3.x
+  - ruby-head
