@@ -1,7 +1,7 @@
 /*!
  * jQuery twitter bootstrap wizard plugin
  * Examples and documentation at: http://github.com/VinceG/twitter-bootstrap-wizard
- * version 1.0
+ * version 1.3.1
  * Requires jQuery v1.3.2 or later
  * Supports Bootstrap 2.2.x, 2.3.x, 3.0
  * Dual licensed under the MIT and GPL licenses:
@@ -75,7 +75,7 @@ var bootstrapWizardCreate = function(element, options) {
     if($index > obj.navigationLength()) {
     } else {
       historyStack.push(formerIndex);
-      $navigation.find(baseItemSelector + ':visible:eq(' + $index + ') a').tab('show');
+      $navigation.find(baseItemSelector + ($settings.withVisible ? ':visible' : '') + ':eq(' + $index + ') a').tab('show');
     }
   };
 
@@ -95,7 +95,7 @@ var bootstrapWizardCreate = function(element, options) {
     if($index < 0) {
     } else {
       historyStack.push(formerIndex);
-      $navigation.find(baseItemSelector + ':visible:eq(' + $index + ') a').tab('show');
+      $navigation.find(baseItemSelector + ($settings.withVisible ? ':visible' : '') + ':eq(' + $index + ') a').tab('show');
     }
   };
 
@@ -158,14 +158,28 @@ var bootstrapWizardCreate = function(element, options) {
   this.lastIndex = function() {
     return obj.navigationLength();
   };
+
   this.getIndex = function(e) {
     return $navigation.find(baseItemSelector).index(e);
   };
+
   this.nextIndex = function() {
-    return $navigation.find(baseItemSelector).index($activeTab) + 1;
+    var nextIndexCandidate=this.currentIndex();
+    var nextTabCandidate=null;
+    do {
+      nextIndexCandidate++;
+      nextTabCandidate = $navigation.find(baseItemSelector + ":eq(" + nextIndexCandidate + ")");
+    } while ((nextTabCandidate)&&(nextTabCandidate.hasClass("disabled")));
+    return nextIndexCandidate;
   };
   this.previousIndex = function() {
-    return $navigation.find(baseItemSelector).index($activeTab) - 1;
+    var prevIndexCandidate=this.currentIndex();
+    var prevTabCandidate=null;
+    do {
+      prevIndexCandidate--;
+      prevTabCandidate = $navigation.find(baseItemSelector + ":eq(" + prevIndexCandidate + ")");
+    } while ((prevTabCandidate)&&(prevTabCandidate.hasClass("disabled")));
+    return prevIndexCandidate;
   };
   this.navigationLength = function() {
     return $navigation.find(baseItemSelector).length - 1;
@@ -184,7 +198,7 @@ var bootstrapWizardCreate = function(element, options) {
   };
   this.show = function(index) {
     var tabToShow = isNaN(index) ?
-      element.find(baseItemSelector + ' a[href=#' + index + ']') :
+      element.find(baseItemSelector + ' a[href="#' + index + '"]') :
       element.find(baseItemSelector + ':eq(' + index + ') a');
     if (tabToShow.length > 0) {
       historyStack.push(obj.currentIndex());
@@ -228,7 +242,7 @@ var bootstrapWizardCreate = function(element, options) {
     }
   };
 
-  var innerTabShown = function (e) {  // use shown instead of show to help prevent double firing
+  var innerTabShown = function (e) {
     var $element = $(e.target).parent();
     var nextTab = $navigation.find(baseItemSelector).index($element);
 
@@ -249,7 +263,7 @@ var bootstrapWizardCreate = function(element, options) {
 
     // remove the existing handlers
     $('a[data-toggle="tab"]', $navigation).off('click', innerTabClick);
-    $('a[data-toggle="tab"]', $navigation).off('shown shown.bs.tab', innerTabShown);
+    $('a[data-toggle="tab"]', $navigation).off('show show.bs.tab', innerTabShown);
 
     // reset elements based on current state of the DOM
     $navigation = element.find('ul:first', element);
@@ -257,7 +271,7 @@ var bootstrapWizardCreate = function(element, options) {
 
     // re-add handlers
     $('a[data-toggle="tab"]', $navigation).on('click', innerTabClick);
-    $('a[data-toggle="tab"]', $navigation).on('shown shown.bs.tab', innerTabShown);
+    $('a[data-toggle="tab"]', $navigation).on('show show.bs.tab', innerTabShown);
 
     obj.fixNavigationButtons();
   };
@@ -281,8 +295,8 @@ var bootstrapWizardCreate = function(element, options) {
 
   $('a[data-toggle="tab"]', $navigation).on('click', innerTabClick);
 
-  // attach to both shown and shown.bs.tab to support Bootstrap versions 2.3.2 and 3.0.0
-  $('a[data-toggle="tab"]', $navigation).on('shown shown.bs.tab', innerTabShown);
+  // attach to both show and show.bs.tab to support Bootstrap versions 2.3.2 and 3.0.0
+  $('a[data-toggle="tab"]', $navigation).on('show show.bs.tab', innerTabShown);
 };
 $.fn.bootstrapWizard = function(options) {
   //expose methods
@@ -308,12 +322,13 @@ $.fn.bootstrapWizard = function(options) {
 
 // expose options
 $.fn.bootstrapWizard.defaults = {
+  withVisible:      true,
   tabClass:         'nav nav-pills',
   nextSelector:     '.wizard li.next',
   previousSelector: '.wizard li.previous',
   firstSelector:    '.wizard li.first',
   lastSelector:     '.wizard li.last',
-  finishSelector:   '.wizard li.finish',
+    finishSelector:   '.wizard li.finish',
   backSelector:     '.wizard li.back',
   onShow:           null,
   onInit:           null,
@@ -321,8 +336,8 @@ $.fn.bootstrapWizard.defaults = {
   onPrevious:       null,
   onLast:           null,
   onFirst:          null,
-  onFinish:         null,
-  onBack:           null,
+    onFinish:         null,
+    onBack:           null,
   onTabChange:      null,
   onTabClick:       null,
   onTabShow:        null
